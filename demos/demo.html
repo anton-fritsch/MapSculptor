@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MapSculptor Visual Map Demonstration</title>
+    </head>
+    <body>
+        <h2 id="title"></h2>
+        <canvas id="demo" width="500" height="500">
+            Sorry, please use a browser that supports HTML5 Canvas
+        </canvas>
+
+        <script src="/js/jquery-1.9.1.min.js"></script>
+        <script src="/js/demo.js"></script>
+
+        <script>
+            $(document).ready(function(){
+                var demo = new AutomatonDemo();
+                demo.show();
+            });
+        </script>
+    </body>
+</html>
