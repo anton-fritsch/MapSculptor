@@ -3,9 +3,12 @@
 import sys
 import argparse
 import random
+import math
+import numpy
 from numpy import *
 from numpy.random import *
 from automaton import Tilemap2dAutomaton
+from perlin import PerlinNoise, apply_noise
 
 try:
     import json
@@ -15,6 +18,7 @@ except:
 parser = argparse.ArgumentParser(description="Generates a map using a 2d Tilemap automaton")
 parser.add_argument('--size-x', type=int, required=True, help="map maximum x coordinate")
 parser.add_argument('--size-y', type=int, required=True, help="map maximum y coordinate")
+parser.add_argument('--method', type=str, required=True, help="automaton2d|perlin")
 parser.add_argument('-o', '--outfile', type=argparse.FileType('w'), default=sys.stdout, help="file to save generated map")
 
 STATES = ["land", "water"]
@@ -42,8 +46,22 @@ def write(tilemap, options):
 if __name__ == "__main__":
     args = parser.parse_args()
 
-    seedmap = generate_random(args.size_x, args.size_y)
-    tilemap = Tilemap2dAutomaton(seedmap, range(len(STATES)))
-    tilemap.run_rule()
+    if args.method == "automaton2d":
+        seedmap = generate_random(args.size_x, args.size_y)
+        tilemap = Tilemap2dAutomaton(seedmap, range(len(STATES)))
+        tilemap.run_rule()
+        write(tilemap.grid, args)
+    elif args.method == "perlin":
+        #TODO: get frequencies working for Fractional Browning Motion
 
-    write(tilemap.grid, args)
+        noise = PerlinNoise()
+        input_map = numpy.zeros((args.size_x, args.size_y))
+        height_map = apply_noise(numpy.array(input_map), 4.0, noise)
+
+        #normalize to 0 - 255 for RGB min/max
+        for i in range(args.size_y):
+            for j in range(args.size_x):
+                height_map[i][j] = int(round((height_map[i][j] + 1) / 2.0 * 255.0))
+
+        args.outfile.write(json.dumps({'tilemap': height_map}))
+
