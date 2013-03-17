@@ -6,6 +6,5 @@ def fractional_browning_motion(octaves, noise, persistence, x, y):
         amplitude = persistence**octave
 
         output = output + noise.apply(x * frequency, y * frequency) * amplitude
-        print "freq: %s, amp: %s" % (frequency, amplitude)
 
     return output

@@ -56,7 +56,7 @@ if __name__ == "__main__":
         noise = PerlinNoise()
 
         persistence = 1.0 / 2.0 
-        octaves = 6
+        octaves = 6 
 
         height_map = []
         for i in range(args.size_y):
