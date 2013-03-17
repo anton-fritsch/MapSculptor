@@ -8,7 +8,8 @@ import numpy
 from numpy import *
 from numpy.random import *
 from automaton import Tilemap2dAutomaton
-from perlin import PerlinNoise, apply_noise
+from perlin import PerlinNoise
+import Fbm
 
 try:
     import json
@@ -52,16 +53,20 @@ if __name__ == "__main__":
         tilemap.run_rule()
         write(tilemap.grid, args)
     elif args.method == "perlin":
-        #TODO: get frequencies working for Fractional Browning Motion
-
         noise = PerlinNoise()
-        input_map = numpy.zeros((args.size_x, args.size_y))
-        height_map = apply_noise(numpy.array(input_map), 4.0, noise)
 
-        #normalize to 0 - 255 for RGB min/max
+        persistence = 1.0 / 2.0 
+        octaves = 6
+
+        height_map = []
         for i in range(args.size_y):
+            height_map.append([])
+
             for j in range(args.size_x):
-                height_map[i][j] = int(round((height_map[i][j] + 1) / 2.0 * 255.0))
+                fbm = Fbm.fractional_browning_motion(octaves, noise, persistence,  
+                         i * 1.0 / args.size_x, j * 1.0 / args.size_y)
+
+                #normalize to 0-255
+                height_map[i].append(int(round((fbm + 1) / 2.0 * 255)))
 
         args.outfile.write(json.dumps({'tilemap': height_map}))
-
