@@ -7,9 +7,9 @@ import math
 import numpy
 from numpy import *
 from numpy.random import *
-from automaton import Tilemap2dAutomaton
-from perlin import PerlinNoise
-import Fbm
+from mapsculptor.automaton import Tilemap2dAutomaton
+from mapsculptor.perlin import PerlinNoise
+import mapsculptor.Fbm as Fbm
 
 try:
     import json
@@ -20,6 +20,7 @@ parser = argparse.ArgumentParser(description="Generates a map using a 2d Tilemap
 parser.add_argument('--size-x', type=int, required=True, help="map maximum x coordinate")
 parser.add_argument('--size-y', type=int, required=True, help="map maximum y coordinate")
 parser.add_argument('--method', type=str, required=True, help="automaton2d|perlin")
+parser.add_argument('--steps', type=int, required=False, default=1, help="number of steps to run in the automaton rule")
 parser.add_argument('-o', '--outfile', type=argparse.FileType('w'), default=sys.stdout, help="file to save generated map")
 
 STATES = ["land", "water"]
@@ -48,9 +49,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.method == "automaton2d":
+        num_iterations = args.steps
         seedmap = generate_random(args.size_x, args.size_y)
         tilemap = Tilemap2dAutomaton(seedmap, range(len(STATES)))
-        tilemap.run_rule()
+
+        for i in range(num_iterations):
+            tilemap.run_rule()
+
         write(tilemap.grid, args)
     elif args.method == "perlin":
         noise = PerlinNoise()

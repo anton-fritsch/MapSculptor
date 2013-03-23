@@ -1,3 +1,5 @@
+from numpy import ndarray 
+
 class Automaton(object):
     """
     Base class of cellular automata
@@ -63,16 +65,20 @@ class Tilemap2dAutomaton(Automaton):
         #expects 2d ndarray from numpy for simplicity. 
         grid_y, grid_x = self.grid.shape
 
+        output_map = ndarray(shape=self.grid.shape) 
+
         for y in range(grid_y):
             for x in range(grid_x):
                 neighbors = self.get_neighborhood((x, y))
 
                 #if >= 5 lands exist, it multiplies, otherwise starves (4-5 rule)
                 if self.check_neighbors_state(neighbors, 0) >= 5:
-                    self.grid[y][x] = self.states[0]
+                    output_map[y][x] = self.states[0]
                 else:
-                    self.grid[y][x] = self.states[1] #turn to something else. 
+                    output_map[y][x] = self.states[1] #turn to something else. 
                     #TODO: currently default is contrived
+
+        self.grid = output_map
 
     def check_neighbors_state(self, neighborhood, state):
         return len([n for n in neighborhood if self.grid[n[1]][n[0]] == state])
