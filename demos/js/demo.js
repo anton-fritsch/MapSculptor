@@ -2,14 +2,23 @@
     DemoBase = function() {
         this.demoContext = $("#demo")[0].getContext('2d');
         this.tileSideLength = 5;
+        this.$controlPanel = $("#infoPanel .controls");
+        this.$controls = $("");
     };
 
-    DemoBase.prototype.draw = function(tilemap){
+    DemoBase.prototype.draw = function(){
+        var tilemap = this.map;
         for(var col = 0; col < tilemap.length; col++) {
             for(var row = 0; row < tilemap[col].length; row++) {
                 this.drawCell(row, col, tilemap[col][row]);
             }
         }
+    };
+
+    DemoBase.prototype.show = function(){
+        this.$controlPanel.html("");
+        this.$controlPanel.append(this.$controls);
+        this.$controls.show();
     };
 
     AutomatonDemo = function() {
@@ -31,6 +40,8 @@
     }; 
 
     AutomatonDemo.prototype.show = function() {
+        DemoBase.prototype.show.call(this);
+
         var self = this;
 
         $.ajax({
@@ -38,13 +49,25 @@
             cache: false, 
             dataType: "json",
             success: function(data){
-                self.draw(data.tilemap);
+                self.map = data.tilemap;
+                self.draw();
             }
         });
     };
 
     PerlinDemo = function() {
         DemoBase.call(this);
+        var self = this;
+
+        this.$controls = $("<div></div>").hide()
+                         .append($("<input></input>").attr({type:"checkbox", id:"showRaw"}))
+                         .append($("<label></label>").attr({for:"showRaw"}).text("Show Heightmap"));
+
+        this.$controls.find("#showRaw").change(function(){
+            self.showRaw = this.checked;
+            self.draw();
+        });
+        
         $("#title").text("2D Perlin Noise Demo");
 
         this.states = [
@@ -91,6 +114,8 @@
     }; 
 
     PerlinDemo.prototype.show = function() {
+        DemoBase.prototype.show.call(this);
+
         var self = this;
 
         $.ajax({
@@ -98,7 +123,8 @@
             cache: false,
             dataType: "json",
             success: function(data){
-                self.draw(data.tilemap);
+                self.map = data.tilemap;
+                self.draw();
             }
         });
     };

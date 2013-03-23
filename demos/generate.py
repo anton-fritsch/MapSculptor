@@ -60,7 +60,7 @@ if __name__ == "__main__":
     elif args.method == "perlin":
         noise = PerlinNoise()
 
-        persistence = 1.0 / 2.0 
+        persistence = 1.0 / math.sqrt(2) 
         octaves = 6 
 
         height_map = []

@@ -109,19 +109,3 @@ class PerlinNoise:
         
         return noise_value 
 
-#TODO: this should be developed into Fractional Brownian Motion
-def apply_noise(input_map, frequency, noise):
-    assert type(frequency) is float
-
-    max_y, max_x = input_map.shape
-
-    output_map = []
-    for y in range(len(input_map)):
-        output_map.append([])
-
-        for x in range(len(input_map[y])): 
-            output_map[y].append(input_map[y][x] + \
-                                 noise.apply(frequency * x / max_x, frequency * y / max_y))
-
-    return output_map
-
